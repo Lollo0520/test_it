@@ -52,8 +52,7 @@ public class SimpleDrawingView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        Paint tmpPaint = new Paint();
-        canvas.drawBitmap(mCacheBitmap, 0, 0, tmpPaint);
+        canvas.drawBitmap(mCacheBitmap, 0, 0, null);
         canvas.drawPath(path, drawPaint);
     }
 
