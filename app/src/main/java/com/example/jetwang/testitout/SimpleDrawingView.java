@@ -6,7 +6,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.Point;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
@@ -29,6 +28,7 @@ public class SimpleDrawingView extends View {
         setFocusable(true);
         setFocusableInTouchMode(true);
         setupPaint();
+        init(context);
     }
 
     private void setupPaint() {
@@ -45,10 +45,15 @@ public class SimpleDrawingView extends View {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics metrics = new DisplayMetrics();
         wm.getDefaultDisplay().getMetrics(metrics);
+        mCacheBitmap = Bitmap.createBitmap(metrics.widthPixels, metrics.heightPixels, Bitmap.Config.ARGB_8888);
+        mCacheCanvas = new Canvas();
+        mCacheCanvas.setBitmap(mCacheBitmap);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
+        Paint tmpPaint = new Paint();
+        canvas.drawBitmap(mCacheBitmap, 0, 0, tmpPaint);
         canvas.drawPath(path, drawPaint);
     }
 
@@ -62,6 +67,10 @@ public class SimpleDrawingView extends View {
                 break;
             case MotionEvent.ACTION_MOVE:
                 path.lineTo(touchX, touchY);
+                break;
+            case MotionEvent.ACTION_UP:
+                mCacheCanvas.drawPath(path, drawPaint);
+                path.reset();
                 break;
             default:
                 return false;
